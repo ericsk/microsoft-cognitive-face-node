@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Face Detection</title>
+        <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css">
+    </head>
+    <body>
+        <header>
+            <div class="container">
+                <h1>Face Detection</h1>
+            </div>
+        </header>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <form>
+                        <div class="form-group">
+                            <label for="APIKey">Face API Key:</label>
+                            <input type="text" id="APIKey" class="form-control" placeholder="Put your API key here.">
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="FaceId" id="FaceId" checked> Face ID
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="FaceLandmark" id="FaceLandmark" checked> Face Landmarks
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                        <h4>Face Attributes</h4>
+                            <label>
+                                <input type="checkbox" name="FaceAttr[]" data-attribute="age" checked> Age
+                            </label>
+                            <label>
+                                <input type="checkbox" name="FaceAttr[]" data-attribute="gender" checked> Gender
+                            </label>
+                            <label>
+                                <input type="checkbox" name="FaceAttr[]" data-attribute="headPose"> Head pose
+                            </label>
+                            <label>
+                                <input type="checkbox" name="FaceAttr[]" data-attribute="smile"> Smile
+                            </label>
+                            <label>
+                                <input type="checkbox" name="FaceAttr[]" data-attribute="facialHair"> Facial hair
+                            </label>
+                            <label>
+                                <input type="checkbox" name="FaceAttr[]" data-attribute="glasses"> Glasses
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label for="Picture">Select a photo：</label>
+                            <input type="file" id="Picture">
+                        </div>
+                    </form>
+                    <hr>
+                    <div id="imageArea">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h3>Raw logs</h3>
+                    <textarea id="rawlogs" readonly class="form-control" rows="50"></textarea>
+                </div>
+            </div>
+        </div>
+        <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+        <script src="lib/jquery/dist/jquery.min.js"></script>
+        <script src="lib/bootstrap/dist/js/bootstrap.min.js"></script>
+        <!-- Insert this line after script imports -->
+        <script>if (window.module) module = window.module;</script>
+        <script>
+            (function(){
+                $('#Picture').change(function(evt){
+                    var apiKey = $('#APIKey').val();
+                    if (apiKey.length == 0) {
+                        alert('Please input your API Key first.');
+                        return false;
+                    }
+                    var params = {
+                        "returnFaceId": $('#FaceId')[0].checked,
+                        "returnFaceLandmarks": $('#FaceLandmark')[0].checked,
+                        "returnFaceAttributes": ""
+                    };
+                    var faceAttr = [];
+                    $("input[name='FaceAttr[]']:checked").each(function() {
+                        faceAttr.push($(this).attr('data-attribute'));
+                    });
+                    params['returnFaceAttributes'] = faceAttr.join(',');
+
+                    var file = evt.target.files[0];
+                    $.ajax({
+                        url: "https://westus.api.cognitive.microsoft.com/face/v1.0/detect?" + $.param(params),
+                        beforeSend: function(xhr) {
+                            xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+                            xhr.setRequestHeader('Ocp-Apim-Subscription-Key', $('#APIKey').val());
+                        },
+                        type: 'POST',
+                        data: file,
+                        processData: false
+                    }).done(function(data){
+                        $('#rawlogs').val(JSON.stringify(data));
+                    });
+
+                    var fr = new FileReader();
+                    fr.onload = function(e) {
+                        var img = new Image();
+                        img.width = 480;
+                        img.src = e.target.result;
+                        $('#imageArea').append(img);
+                    };
+                    fr.readAsDataURL(file);
+                });
+            })();
+        </script>
+    </body>
+</html>
