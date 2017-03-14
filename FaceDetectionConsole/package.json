@@ -1,0 +1,27 @@
+{
+  "name": "face-detection-node-cli",
+  "version": "0.0.1",
+  "author": {
+    "name": "Eric ShangKuan"
+  },
+  "main": "build/src/face.js",
+  "description": "",
+  "license": "MIT",
+  "engineStrict": true,
+  "engines": {
+    "node": ">= 6.9.0"
+  },
+  "scripts": {
+    "clean": "rimraf converage build tmp",
+    "build": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^7.0.8",
+    "rimraf": "^2.6.1",
+    "typescript": "^2.2.1"
+  },
+  "dependencies": {
+    "commander": "^2.9.0",
+    "request": "^2.81.0"
+  }
+}
