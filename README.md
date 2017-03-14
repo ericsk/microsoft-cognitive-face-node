@@ -5,3 +5,4 @@ These samples shows the capabilities of **Face API** in [Microsoft Cognitive Ser
 ## Samples
 
 * [Face Detection](FaceDetection/README.md)
+* [Face Detection CLI](FaceDetectionConsole/README.md)
